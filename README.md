@@ -1,46 +1,41 @@
-# BarnSight - Model Training Pipeline
+# BarnSight Training Pipeline
 
-**Model training, experimentation, and optimization for on-device animal excrement detection.**
+A professional, reproducible environment for training and optimizing computer vision models for on-device animal excrement detection.
 
-This repository contains the **training and experimentation pipeline** for the **BarnSight** computer vision models.
-Its sole responsibility is to produce **efficient, accurate models** that can later be deployed to edge devices running inside barns.
+This repository encompasses the training and experimentation architecture for the BarnSight project. Its primary responsibility is the orchestration of data, hyperparameter tuning, and model compilation to yield robust artifacts suitable for edge deployment.
 
-If the edge device is the eyes, this repo is the school they went to.
+---
 
-## 🎯 Purpose
+## Overview
 
-Farm environments are visually chaotic:
+Agricultural environments present complex visual challenges:
+- Variable and inconsistent lighting
+- Unpredictable floor conditions and materials
+- Multi-species subject tracking
+- High incidence of visual occlusion
 
-- uneven lighting
-- dirty floors
-- occlusions
-- different animal species
-- wildly inconsistent “ground truth”
+The BarnSight training pipeline is designed to address these variables by providing a structured, configuration-driven approach. This repository does not host the runtime service; rather, it produces the optimized model artifacts (e.g., `.pt`, `.onnx`) required by edge inference devices.
 
-This repository exists to turn that chaos into robust, production-ready models that can reliably detect visible animal excrement under real farm conditions.
-
-The output of this repo is trained model artifacts (e.g., `.pt`, `.onnx`), not a running service.
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-You need [uv](https://github.com/astral-sh/uv) installed to manage the Python environment and dependencies efficiently.
+Dependency management and environment isolation are handled via [`uv`](https://github.com/astral-sh/uv).
 
 ```bash
 # Clone the repository
-git clone https://github.com/barnsight/train.git barnsight-train
+git clone https://github.com/barnsight/barnsight-train.git barnsight-train
 cd barnsight-train
 
-# Install dependencies using uv
+# Synchronize the environment
 uv sync
 ```
 
-### Dataset Structure
+### Dataset Specification
 
-The training pipeline expects a YOLO-formatted dataset. By default, it looks for `datasets/training/data.yaml`. Your dataset should look like this:
+The pipeline expects data to be formatted according to standard YOLO specifications. Ensure your dataset is structured as follows, with the configuration mapped to `datasets/training/data.yaml`:
 
-```
+```text
 datasets/training/
 ├── images/
 │   ├── train/
@@ -51,54 +46,51 @@ datasets/training/
 └── data.yaml
 ```
 
-## 🧪 Training Workflow
+## Training Lifecycle
 
-1. **Prepare and label farm images**
-    - Capture variations: Different animals, floor materials, lighting conditions, and contamination levels.
-2. **Configure training parameters**
-    - Modify `settings.ini` to adjust basic training configurations.
-3. **Train the model**
-    - Run the training script locally or use the provided Colab notebook for GPU access.
-4. **Export trained weights**
-    - The output models will be saved in `datasets/result/train/weights/`.
-    - These `.pt` files are ready to be optimized and placed in the edge device `models/` directory.
+The model development process follows a standardized lifecycle:
 
-### Running Training Locally
+1. **Dataset Preparation:** Curate and label imagery representing diverse environmental conditions and contamination levels.
+2. **Configuration:** Define architecture and hyperparameters within `settings.ini`.
+3. **Execution:** Initiate training runs locally or via cloud instances (e.g., Google Colab).
+4. **Artifact Export:** Harvest optimized model weights from `datasets/result/train/weights/` for subsequent edge deployment.
 
-You can start training using the default `settings.ini`:
+### Execution
+
+To initiate a training run utilizing the default configuration specified in `settings.ini`:
 
 ```bash
 uv run train.py
 ```
 
-Override settings using command-line arguments:
+For rapid experimentation, parameters may be overridden directly via the command line interface:
 
 ```bash
-uv run train.py --epochs 50 --batch 16 --model yolo11s.pt
+uv run train.py --epochs 50 --batch 16 --model yolo11s.pt --imgsz 640
 ```
 
-## ⚙️ Configuration
+## Configuration Architecture
 
-Training behavior is controlled via:
+System behavior is governed by a dual-layer configuration design:
 
-- **`settings.ini`** — Default model and dataset configuration.
-- **`train.py`** — Training logic, orchestration, and CLI arguments.
+- **`settings.ini`**: Establishes the baseline training parameters, optimized by default for resource-constrained environments.
+- **`train.py`**: Handles orchestration and parsing of runtime overrides.
 
-Example `settings.ini`:
+*Example `settings.ini`:*
 ```ini
 [DEFAULT]
 DATASET=datasets/training/data.yaml
+MODEL=yolo11n.pt
 EPOCHS=10
-BATCH=4
-WORKERS=8
+BATCH=2
+WORKERS=2
+IMGSZ=416
 ```
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions! Whether it's tweaking the augmentation strategy, proposing a better base model, or improving the data loading pipeline.
+We welcome structural improvements, architectural explorations, and optimizations. For detailed guidelines regarding bug reporting, feature proposals, and the pull request workflow, please review our [Contributing Guidelines](CONTRIBUTING.md).
 
-Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to submit pull requests, report issues, and our coding standards.
+## License
 
-## 📄 License
-
-Licensed under the MIT License. See the **LICENSE** file for details.
+This project is licensed under the MIT License. Please refer to the **[LICENSE](LICENSE)** file for comprehensive details.
